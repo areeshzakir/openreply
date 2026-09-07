@@ -180,7 +180,8 @@ export async function sendPrivateReplyWithButton(
   commentId: string,
   text: string,
   buttonTitle: string,
-  payload: string
+  payload: string,
+  profileUsername?: string
 ): Promise<{ recipient_id: string; message_id: string }> {
   const response = await fetch(
     `${instagramGraphBase()}/${instagramAccountId}/messages`,
@@ -200,6 +201,7 @@ export async function sendPrivateReplyWithButton(
               // Button template text is capped at 640 chars by Meta.
               text: text.slice(0, 640),
               buttons: [
+                ...(profileUsername ? [{ type: "web_url", title: "Visit Profile", url: `https://www.instagram.com/${encodeURIComponent(profileUsername.replace(/^@/, ""))}/` }] : []),
                 { type: "postback", title: buttonTitle.slice(0, 20), payload },
               ],
             },
@@ -223,7 +225,8 @@ export async function sendDirectMessageWithButton(
   userId: string,
   text: string,
   buttonTitle: string,
-  payload: string
+  payload: string,
+  profileUsername?: string
 ): Promise<{ recipient_id: string; message_id: string }> {
   const response = await fetch(
     `${instagramGraphBase()}/${instagramAccountId}/messages`,
@@ -242,6 +245,7 @@ export async function sendDirectMessageWithButton(
               template_type: "button",
               text: text.slice(0, 640),
               buttons: [
+                ...(profileUsername ? [{ type: "web_url", title: "Visit Profile", url: `https://www.instagram.com/${encodeURIComponent(profileUsername.replace(/^@/, ""))}/` }] : []),
                 { type: "postback", title: buttonTitle.slice(0, 20), payload },
               ],
             },

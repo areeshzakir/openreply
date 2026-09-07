@@ -153,6 +153,7 @@ const mockAutomation = {
   instagramAccount: {
     id: "ig_account_row_1",
     instagramId: "ig_456",
+    username: "prepshots_by_gyanlive",
     accessToken: "encrypted_token_abc",
   },
   workspace: {
@@ -607,7 +608,8 @@ describe("DM Worker — Full Pipeline", () => {
       "comment_555",
       "Follow me first commenter_user, then tap 👇",
       "I'm following ✅",
-      "followcheck:auto_789"
+      "followcheck:auto_789",
+      "prepshots_by_gyanlive"
     );
     expect(mockSendPrivateReplyWithLinkButton).not.toHaveBeenCalled();
     expect(mockSendPrivateReply).not.toHaveBeenCalled();
@@ -739,6 +741,26 @@ describe("DM Worker — Full Pipeline", () => {
 
     expect(mockSendDirectMessage).not.toHaveBeenCalled();
     expect(mockReserveWorkspaceDMSend).not.toHaveBeenCalled();
+  });
+
+  it("should include the profile destination when a non-follower taps confirmation again", async () => {
+    mockPrisma.automation.findFirst.mockResolvedValue({
+      ...mockAutomation,
+      requireFollow: true,
+      followPromptMessage: "Follow first",
+      followPromptButtonLabel: "I'm following ✅",
+    });
+    mockGetUserFollowStatus.mockResolvedValue(false);
+    await getProcessor()(createMockPostbackJob({
+      instagramAccountId: "ig_456",
+      userId: "commenter_999",
+      payload: "followcheck:auto_789",
+    }));
+    expect(mockSendDirectMessageWithButton).toHaveBeenCalledWith(
+      "decrypted_token", "ig_456", "commenter_999", "Follow first",
+      "I'm following ✅", "followcheck:auto_789", "prepshots_by_gyanlive"
+    );
+    expect(mockSendDirectMessage).not.toHaveBeenCalled();
   });
 
   it("should not let a read fallback bypass the follow gate", async () => {
@@ -1057,7 +1079,8 @@ describe("DM Worker — DM keyword trigger", () => {
       "commenter_999",
       expect.any(String),
       "I'm following ✅",
-      "followcheck:auto_789"
+      "followcheck:auto_789",
+      "prepshots_by_gyanlive"
     );
     expect(mockSendDirectMessage).not.toHaveBeenCalled();
   });

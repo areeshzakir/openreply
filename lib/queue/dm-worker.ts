@@ -578,7 +578,8 @@ async function processComment(job: Job<ProcessCommentJob>): Promise<void> {
           commentId,
           promptText,
           automation.followPromptButtonLabel || "i'm following",
-          `followcheck:${automation.id}`
+          `followcheck:${automation.id}`,
+          automation.instagramAccount.username
         );
       } else if (automation.trackedLinks.length > 0) {
         // Try button template first; if Meta rejects it, fall back to inline links.
@@ -768,7 +769,8 @@ async function processPostback(job: Job<ProcessPostbackJob>): Promise<void> {
           userId,
           promptText,
           automation.followPromptButtonLabel || "i'm following",
-          `followcheck:${automation.id}`
+          `followcheck:${automation.id}`,
+          automation.instagramAccount.username
         );
       } catch (error) {
         console.log(
@@ -1106,7 +1108,8 @@ async function processMessage(job: Job<ProcessMessageJob>): Promise<void> {
           senderId,
           promptText,
           automation.followPromptButtonLabel || "I'm following ✅",
-          `followcheck:${automation.id}`
+          `followcheck:${automation.id}`,
+          automation.instagramAccount.username
         );
       } else {
         await sendRevealDirectMessage(
@@ -1291,4 +1294,3 @@ export function createDMWorker(): Worker<DmQueueJob> {
 
   return worker;
 }
-
